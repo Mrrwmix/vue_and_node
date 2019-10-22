@@ -85,6 +85,16 @@
       </keep-alive>
       <div v-awesome.red.big="'text as value'"></div>
       <div v-awesome.blue.small="'text as value'"></div>
+
+      <hr />
+      <div v-user-lastname="userLastname"></div>
+      <transition name="slideup">
+        <div class="p-2 mb-2 bg-success text-white" v-if="display">Oi oi!</div>
+      </transition>
+      <transition name="appear">
+        <div class="p-2 mb-2 bg-success text-white" v-if="display">Hello</div>
+      </transition>
+      <button class="btn btn-primary" @click="display = !display">Toggle animation</button>
     </div>
     <app-footer></app-footer>
   </div>
@@ -121,7 +131,9 @@ export default {
         country: "India"
       },
       countries: ["USA", "India", "UK", "Russia"],
-      compToRender: "compContact"
+      compToRender: "compContact",
+      userLastname: "Jones",
+      display: false
     };
   },
   methods: {
@@ -145,6 +157,13 @@ export default {
     setTimeout(() => {
       this.slotName = "other";
     }, 3000);
+  },
+  directives: {
+    "user-lastname": {
+      bind(el, binding) {
+        el.innerHTML = binding.value;
+      }
+    }
   }
 };
 </script>
@@ -160,5 +179,47 @@ body {
   min-height: 84vh;
   box-sizing: border-box;
   padding: 20px;
+}
+
+.appear-enter {
+  transform: translateX(30px);
+  opacity: 0;
+}
+.appear-enter-active {
+  transition: all 0.3s ease;
+}
+
+.appear-leave-active {
+  transform: translateX(30px);
+  transition: all 0.3s ease;
+}
+
+.slideup-enter-active {
+  transition: opacity 1s;
+  animation: slideUp 1s ease-out;
+}
+
+.slideup-leave-active {
+  opacity: 0;
+  transition: opacity 1s;
+  animation: slideDown 1s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(20px);
+  }
 }
 </style>
