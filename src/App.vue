@@ -102,6 +102,50 @@
         <div class="p-3 mb-2 bg-success text-white" v-if="!status" key="status_down">Status is false</div>
         <div class="p-3 mb-2 bg-success text-white" v-else key="status_up">Status is true</div>
       </transition>
+
+      <button class="btn btn-primary" @click="custom = !custom">Custom</button>
+      <transition
+        name="awesome"
+        enter-active-class="animated rotateInDownRight"
+        leave-active-class="animated rollOut"
+      >
+        <div class="p-2 mb-2 bg-success text-white" v-if="custom">Hello</div>
+      </transition>
+
+      <transition name="appear" @before-enter="beforeEnter" @enter="enter">
+        <div class="p-2 mb-2 bg-success text-white" v-if="hook">Hello</div>
+      </transition>
+      <button class="btn btn-primary" @click="hook = !hook">Toggle Hook</button>
+
+      <transition
+        name="appear"
+        @before-enter="beforeEnter"
+        @enter="enter"
+        @after-enter="afterEnter"
+        @enter-cancelled="enterCancelled"
+        @before-leave="beforeLeave"
+        @leave="leave"
+        @after-leave="afterLeave"
+        @leave-cancelled="leaveCancelled"
+        :css="false"
+      >
+        <div class="p-2 mb-2 bg-success text-white" v-if="velocity">velocity</div>
+      </transition>
+      <button class="btn btn-primary" @click="velocity = !velocity">Toggle velocity</button>
+
+      <br />
+      <input v-model="nameIn" />
+      <button class="btn btn-primary" @click="addOne">Add a Name</button>
+      <ul class="list-group">
+        <transition-group name="appear">
+          <li
+            class="list-group-item"
+            v-for="(item, index) in list"
+            :key="item"
+            @click="removeItem(index)"
+          >{{item}}</li>
+        </transition-group>
+      </ul>
     </div>
     <app-footer></app-footer>
   </div>
@@ -115,6 +159,7 @@ import compAbilities from "./components/User/Abilities";
 import compHome from "./components/Home";
 import compContact from "./components/Contact";
 import compPage from "./components/Page";
+import Velocity from "velocity-animate";
 
 export default {
   data() {
@@ -141,15 +186,78 @@ export default {
       compToRender: "compContact",
       userLastname: "Jones",
       display: false,
-      status: false
+      status: false,
+      custom: true,
+      hook: false,
+      velocity: false,
+      nameIn: "",
+      list: ["Francis", "Ron", "James"]
     };
   },
   methods: {
+    removeItem(index) {
+      this.list.splice(index, 1);
+    },
     updateLastname(val) {
       this.lastname = val;
     },
     submitForm() {
       console.log(this.formdata);
+    },
+
+    beforeEnter: function(el) {
+      el.style.opacity = 0;
+    },
+    enter: function(el, done) {
+      Velocity(
+        el,
+        {
+          opacity: 1,
+          fontSize: "20px"
+        },
+        {
+          duration: 2000,
+          complete: done
+        }
+      );
+    },
+    afterEnter: function() {
+      console.log("Element added");
+    },
+    enterCancelled: function() {
+      console.log("Enter cancelled");
+    },
+
+    // --------
+    // LEAVING
+    // --------
+
+    beforeLeave: function() {
+      console.log("Before leave");
+    },
+
+    leave: function(el, done) {
+      Velocity(
+        el,
+        {
+          rotateZ: "100deg"
+        },
+        {
+          loop: 2,
+          complete: done
+        }
+      );
+    },
+    afterLeave: function() {
+      console.log("After leave");
+    },
+    leaveCancelled: function() {
+      console.log("After cancelled");
+    },
+    addOne() {
+      if (!this.list.includes(this.nameIn)) {
+        this.list.unshift(this.nameIn);
+      }
     }
   },
   components: {
@@ -177,6 +285,16 @@ export default {
 </script>
 
 <style>
+.awesome-enter {
+  opacity: 0;
+}
+.awesomeEnter {
+  transition: all 1s ease;
+}
+.awesomeLeave {
+  transition: all 1s ease;
+  opacity: 0;
+}
 body {
   padding: 0;
   margin: 0;
@@ -193,13 +311,17 @@ body {
   transform: translateX(30px);
   opacity: 0;
 }
+.appear-move {
+  transition: transform 1s;
+}
 .appear-enter-active {
-  transition: all 0.3s ease;
+  transition: all 1s ease;
 }
 
 .appear-leave-active {
   transform: translateX(30px);
   transition: all 0.3s ease;
+  position: absolute;
 }
 
 .slideup-enter-active {
