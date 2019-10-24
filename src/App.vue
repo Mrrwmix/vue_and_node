@@ -146,6 +146,21 @@
           >{{item}}</li>
         </transition-group>
       </ul>
+
+      <!-- <transition name="slideup" appear>
+        <div class="p-2 mb-2 bg-success text-white" v-if="onload">Oi oi!</div>
+      </transition>-->
+      <transition name="slideup" appear>
+        <User />
+      </transition>
+      <div>
+        <span>Brand:</span>
+        {{brand | getBrand | to-uppercase }}
+        <span>Buyer:</span>
+        {{name | to-uppercase}}
+      </div>
+      <User />
+      <Client />
     </div>
     <app-footer></app-footer>
   </div>
@@ -160,10 +175,14 @@ import compHome from "./components/Home";
 import compContact from "./components/Contact";
 import compPage from "./components/Page";
 import Velocity from "velocity-animate";
+import User from "./components/User";
+import Client from "./components/Client";
 
 export default {
   data() {
     return {
+      brand: 2,
+      onload: true,
       name: "Francis",
       lastname: "Jones",
       age: 25,
@@ -193,6 +212,26 @@ export default {
       nameIn: "",
       list: ["Francis", "Ron", "James"]
     };
+  },
+  filters: {
+    getBrand(value) {
+      let brand = "";
+      switch (value) {
+        case 1:
+          brand = "Coke";
+          break;
+        case 2:
+          brand = "Pepsi";
+          break;
+        case 3:
+          brand = "Juice";
+          break;
+        default:
+          brand = "no match";
+          break;
+      }
+      return brand;
+    }
   },
   methods: {
     removeItem(index) {
@@ -267,7 +306,9 @@ export default {
     compAbilities,
     compContact,
     compHome,
-    compPage
+    compPage,
+    User,
+    Client
   },
   created() {
     setTimeout(() => {

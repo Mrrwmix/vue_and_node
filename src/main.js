@@ -4,7 +4,17 @@ import Header from './components/Header_footer/Header.vue';
 
 Vue.component('app-header', Header);
 
+Vue.filter('to-uppercase', value => {
+  return value.toUpperCase();
+});
+
 export const bus = new Vue();
+
+Vue.mixin({
+  created() {
+    console.log('Created');
+  }
+}); // on each component, this mixin will be called
 
 Vue.directive('awesome', {
   bind(el, binding) {
